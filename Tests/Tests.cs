@@ -1,4 +1,5 @@
 using Checkout.Data;
+using Checkout.Entity;
 using FluentAssertions;
 using Xunit.Abstractions;
 

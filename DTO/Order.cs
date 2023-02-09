@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace Checkout.DTO
+﻿namespace Checkout.DTO
 {
   public class Order
   {
