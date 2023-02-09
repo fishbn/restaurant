@@ -1,73 +1,56 @@
 ﻿using Checkout.DTO;
 using Newtonsoft.Json;
+using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Checkout
 {
   public class Table
   {
-    private string Json { get; set; }
+    private readonly ITestOutputHelper _logger;
+    private readonly Order _order;
 
-    public Table()
+    public Table(ITestOutputHelper logger)
     {
-        
+       _order = new Order();
+       _logger = logger;
     }
 
     public void CreateOrder(int starters, int mains, int drinks, TimeSpan time = default)
     {
-      var order = new Order
-      {
-        Starter = starters,
-        Main = mains
-      };
+      if (time == default)
+        time = DateTime.Now.TimeOfDay;
+
+      _order.Starter = starters;
+      _order.Main = mains;
 
       if (time < TimeSpan.FromHours(19))
-        order.DrinkBefore19 = drinks;
-      else order.Drink = drinks;
-
-      // Save
-      Json = JsonConvert.SerializeObject(order);
+        _order.DrinkBefore19 = drinks;
+      else _order.Drink = drinks;
     }
 
-    public void UpdateOrder(int starters, int mains, int drinks, TimeSpan time)
+    public void UpdateOrder(int starters, int mains, int drinks, TimeSpan time = default)
     {
-      Order? order = JsonConvert.DeserializeObject<Order>(Json);
+      _order.Starter += starters;
+      _order.Main += mains;
 
-      if (order != null)
-      {
-        order.Starter += starters;
-        order.Main += mains;
-
-        if (time < TimeSpan.FromHours(19))
-          order.DrinkBefore19 += drinks;
-        else order.Drink += drinks;
-        
-        Json = JsonConvert.SerializeObject(order);
-      }
+      if (time < TimeSpan.FromHours(19))
+        _order.DrinkBefore19 += drinks;
+      else _order.Drink += drinks;
     }
 
-    public void CancelOrder(int starters, int mains, int drinks)
+    public void CancelOrder(int starters = 0, int mains = 0, int drinks = 0, int drinksBefore19 = 0)
     {
-      Order? order = JsonConvert.DeserializeObject<Order>(Json);
-
-      if (order != null)
-      {
-        order.Starter = order.Starter > 0 ? order.Starter - starters : 0;
-        order.Main = order.Main > 0 ? order.Main - mains : 0;
-        order.DrinkBefore19 = order.DrinkBefore19 > 0 ? order.DrinkBefore19 - drinks : 0;
-        order.Drink = order.Drink > 0 ? order.Drink - drinks : 0;
-
-        Json = JsonConvert.SerializeObject(order);
-      }
+      _order.Starter = _order.Starter > 0 ? _order.Starter - starters : 0;
+      _order.Main = _order.Main > 0 ? _order.Main - mains : 0;
+      _order.DrinkBefore19 = _order.DrinkBefore19 > 0 ? _order.DrinkBefore19 - drinksBefore19 : 0;
+      _order.Drink = _order.Drink > 0 ? _order.Drink - drinks : 0 ;
     }
 
     public double Checkout()
     {
-      Order? order = JsonConvert.DeserializeObject<Order>(Json);
-
-      if (order == null)
-        return -1;
-
-      return order.Calculate();
+      _logger.WriteLine(_order.ToString());
+      return _order.Calculate();
     }
   }
 }
