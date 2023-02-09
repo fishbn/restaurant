@@ -15,20 +15,28 @@
 
     public double Calculate()
     {
-      double priceWithoutDiscount = CalculatePrice();
-      double discount = CalculateDiscount(priceWithoutDiscount);
-      return priceWithoutDiscount + discount;
+      double foodPriceWithoutDiscount = CalculateFoodPrice();
+      double drinksPrice = CalculateDrinksPrice();
+      double foodDiscount = CalculateDiscount(foodPriceWithoutDiscount);
+
+      return foodPriceWithoutDiscount + foodDiscount + drinksPrice;
     }
 
-    private double CalculatePrice()
+    private double CalculateFoodPrice()
     {
-      double price = (Starter * 4.00) + (Main * 7.00) + (Drink * 2.50) + (DrinkBefore19 * (2.50 - (2.50 * 0.30)));
-      return Math.Round(price, 2);
+      double foodPrice = Starter * 4.00 + Main * 7.00;
+      return foodPrice;
     }
 
-    private double CalculateDiscount(double priceWithoutDiscount)
+    private double CalculateDrinksPrice()
     {
-      double discount = priceWithoutDiscount * 0.10;
+      double drinksPrice = Drink * 2.50 + DrinkBefore19 * (2.50 - 2.50 * 0.30);
+      return Math.Round(drinksPrice);
+    }
+
+    private double CalculateDiscount(double foodPriceWithoutDiscount)
+    {
+      double discount = foodPriceWithoutDiscount * 0.10;
       return Math.Round(discount, 2);
     }
 
@@ -39,7 +47,7 @@
              $"(£7.00) Mains: {Main}" + Environment.NewLine +
              $"(£2.25) Drinks (%): {DrinkBefore19}" + Environment.NewLine +
              $"(£2.50) Drinks: {Drink}" + Environment.NewLine +
-             $"(10%) Service: £{CalculateDiscount(CalculatePrice())}" + Environment.NewLine +
+             $"(10%) Service (FoodOnly): £{CalculateDiscount(CalculateFoodPrice())}" + Environment.NewLine +
              $"TOTAL: £{Calculate()}" + Environment.NewLine;
     }
   }
