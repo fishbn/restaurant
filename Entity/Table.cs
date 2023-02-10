@@ -1,4 +1,5 @@
 ﻿using Checkout.DTO;
+using Checkout.Enums;
 using Xunit.Abstractions;
 
 namespace Checkout.Entity
@@ -49,6 +50,17 @@ namespace Checkout.Entity
         {
             _logger.WriteLine(_order.ToString());
             return _order.Calculate();
+        }
+
+        public Dictionary<ItemType, int> GetCurrentTotalNumberOfItems()
+        {
+          return new Dictionary<ItemType, int>
+          {
+            { ItemType.Starters , _order.Starter },
+            { ItemType.Mains , _order.Main },
+            { ItemType.Drinks , _order.Drink },
+            { ItemType.DrinksBefore19 , _order.DrinkBefore19 }
+          };
         }
     }
 }
