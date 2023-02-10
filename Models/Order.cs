@@ -1,17 +1,12 @@
-﻿namespace Checkout.DTO
+﻿namespace Checkout.Models
 {
   public class Order
   {
-    public Guid Id { get; private set; }
+    public int Id { get; set; }
     public int Starter { get; set; } = 0;
     public int Main { get; set; } = 0;
     public int Drink { get; set; } = 0; 
     public int DrinkBefore19 { get; set; } = 0;
-
-    public Order()
-    {
-      Id = Guid.NewGuid();
-    }
 
     public double Calculate()
     {

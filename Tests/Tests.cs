@@ -24,7 +24,7 @@ namespace Checkout.Tests
           Table table = new(_logger);
           
           // Act
-          table.CreateOrder(starters, mains, drinks, time);
+          int orderId = table.CreateOrder(starters, mains, drinks, time);
           double totalPrice = table.Checkout();
 
           // Assert
@@ -38,6 +38,9 @@ namespace Checkout.Tests
             items[DrinksBefore19].Should().Be(drinks);
           else
             items[Drinks].Should().Be(drinks);
+
+          //Teardown
+          table.DeleteOrderById(orderId);
         }
 
         [Theory]
@@ -52,7 +55,7 @@ namespace Checkout.Tests
           Table table = new(_logger);
           
           // Act
-          table.CreateOrder(starters, mains, drinks, time);
+          int orderId = table.CreateOrder(starters, mains, drinks, time);
           double totalPrice = table.Checkout();
 
           // Assert
@@ -65,7 +68,7 @@ namespace Checkout.Tests
           items[Drinks].Should().Be(0);
 
           // ReAct
-          table.UpdateOrder(0, additionalMains, additionalDrinks, additionalOrderTime);
+          table.AddToOrder(0, additionalMains, additionalDrinks, additionalOrderTime);
           double updatedTotalPrice = table.Checkout();
 
           // ReAssert
@@ -76,11 +79,15 @@ namespace Checkout.Tests
           items[Mains].Should().Be(mains + additionalMains);
           items[DrinksBefore19].Should().Be(drinks);
           items[Drinks].Should().Be(additionalDrinks);
-        }
+
+          //Teardown
+          table.DeleteOrderById(orderId);
+    }
 
         [Theory]
         [MemberData(nameof(TestData.Scenario3), MemberType = typeof(TestData))]
-        public void Test_Should_ManageOrderWithFurtherCancellation(int starters, int mains, int drinks, TimeSpan time, double expected1, double expected2)
+        public void Test_Should_ManageOrderWithFurtherCancellation(int starters, int mains, int drinks, TimeSpan time,
+          double expected1, double expected2)
         {
           const int cancellationStarters = 1;
           const int cancellationMains = 1;
@@ -88,9 +95,9 @@ namespace Checkout.Tests
 
           // Arrange
           Table table = new(_logger);
-          
+
           // Act
-          table.CreateOrder(starters, mains, drinks, time);
+          int orderId = table.CreateOrder(starters, mains, drinks, time);
           double totalPrice = table.Checkout();
 
           // Assert
@@ -103,7 +110,7 @@ namespace Checkout.Tests
           items[Drinks].Should().Be(0);
 
           // ReAct
-          table.CancelOrder(cancellationStarters, cancellationMains, drinksBefore19: cancellationDrinks);
+          table.RemoveFromOrder(cancellationStarters, cancellationMains, drinksBefore19: cancellationDrinks);
           double updatedTotalPrice = table.Checkout();
 
           // ReAssert
@@ -114,6 +121,9 @@ namespace Checkout.Tests
           items[Mains].Should().Be(mains - cancellationMains);
           items[DrinksBefore19].Should().Be(drinks - cancellationDrinks);
           items[Drinks].Should().Be(0);
+
+          //Teardown
+          table.DeleteOrderById(orderId);
         }
     }
 }
